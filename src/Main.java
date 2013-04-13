@@ -14,8 +14,11 @@ public class Main {
 
     public static final int MAX_FILE_SIZE = 2000;
     public static final int MAX_NO_OF_FILES = 100;
-    public static final int MAX_NO_OF_PEERS = 10;
+    public static final int MAX_NO_OF_PEERS = 20;
     public static final int FILE_AVAILABILITY_MODULO = 10;
+    public static final int MAX_NO_OF_ACTIONS = 3;
+    public static final int MAX_NO_OF_ROUNDS_PER_PEER = 50000;
+
     private static final Map<Integer, Integer> bandwidthMap;
     static {
         Map bandMap = new HashMap<Integer, Integer>();
@@ -34,10 +37,22 @@ public class Main {
         Map<Integer, TrackedFile> trackedFileMap = initializeTrackedFiles();
         List<Peer> listOfPeers = createPeerList();
         distributeFilesAmongPeers(trackedFileMap, listOfPeers);
-        displayFileSeeders(trackedFileMap);
+        //displayFileSeeders(trackedFileMap);
 
         Tracker tracker = new Tracker();
         tracker.setAvailableFiles(trackedFileMap);
+
+        for (Peer peer : listOfPeers) {
+            peer.setTracker(tracker);
+        }
+
+        for (Peer peer : listOfPeers) {
+            peer.getThread().start();
+        }
+
+        for (Peer peer : listOfPeers) {
+            peer.showFinalState();
+        }
     }
 
     private static void displayFileSeeders(Map<Integer, TrackedFile> trackedFileMap) {
@@ -80,6 +95,8 @@ public class Main {
             int bandwidthMapIndex = bandwidthChooser.nextInt(bandwidthMap.size());
             peer.setUploadSpeed(bandwidthMap.get(bandwidthMapIndex));
             peer.setDownloadSpeed(bandwidthMap.get(bandwidthMapIndex));
+            peer.setAmountDownloaded(1);
+            peer.setAmountUploaded(1);
 
             listOfPeers.add(peer);
         }

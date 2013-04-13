@@ -28,7 +28,7 @@ public class Tracker{
         this.availableFiles = availableFiles;
     }
 
-    public void SendMessage(Peer peer, String selectedAction, int fileId){
+    public void sendMessage(Peer peer, String selectedAction, int fileId){
         /*TODO: this method will be called by peer after a fixed interval of time
          *take action based on message
          *if action = share, add peer to list of seeders of that particular tracked file
