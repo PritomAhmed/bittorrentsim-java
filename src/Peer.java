@@ -1,0 +1,140 @@
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: pritom
+ * Date: 4/5/13
+ * Time: 10:26 AM
+ * To change this template use File | Settings | File Templates.
+ */
+public class Peer {
+
+    private int id;
+    private float amountDownloaded;
+    private float amountUploaded;
+    private float shareRatio;
+    private float satisfaction;
+    private long storageCapacity;
+    private int downloadSpeed;
+    private int uploadSpeed;
+    private Map<Integer, SharedFile> sharedFiles;
+
+    private static final int DISSATISFACTION_PENALTY = 5;
+
+    public Peer() {
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getDownloadSpeed() {
+        return downloadSpeed;
+    }
+
+    public void setDownloadSpeed(int downloadSpeed) {
+        this.downloadSpeed = downloadSpeed;
+    }
+
+    public int getUploadSpeed() {
+        return uploadSpeed;
+    }
+
+    public void setUploadSpeed(int uploadSpeed) {
+        this.uploadSpeed = uploadSpeed;
+    }
+
+    public float getAmountDownloaded() {
+        return amountDownloaded;
+    }
+
+    public void setAmountDownloaded(float amountDownloaded) {
+        this.amountDownloaded = amountDownloaded;
+    }
+
+    public float getAmountUploaded() {
+        return amountUploaded;
+    }
+
+    public void setAmountUploaded(float amountUploaded) {
+        this.amountUploaded = amountUploaded;
+    }
+
+    public float getSatisfaction() {
+        return satisfaction;
+    }
+
+    public void setSatisfaction(float satisfaction) {
+        this.satisfaction = satisfaction;
+    }
+
+    public float getShareRatio() {
+        return shareRatio;
+    }
+
+    public void setShareRatio(float shareRatio) {
+        this.shareRatio = shareRatio;
+    }
+
+
+    public long getStorageCapacity() {
+        return storageCapacity;
+    }
+
+    public void setStorageCapacity(long storageCapacity) {
+        this.storageCapacity = storageCapacity;
+    }
+
+    public void showSharedFiles() {
+        System.out.println("TOTAL FILES : " + sharedFiles.size());
+        for (int sharedFileId : sharedFiles.keySet()) {
+            System.out.println("Id : " + sharedFileId + ", size : " + sharedFiles.get(sharedFileId).getSize() + ", uploadedSize : " + sharedFiles.get(sharedFileId).getUploadedSize());
+        }
+    }
+
+    public void downloadFile(TrackedFile fileToBeDownloaded) {
+        //TODO : add download logic
+        Map<Integer, Peer> seeders = fileToBeDownloaded.getSeeders();
+        if (seeders.isEmpty()) {
+            satisfaction -= DISSATISFACTION_PENALTY;
+        } else {
+            int totalUploadSpeedOfFile = fileToBeDownloaded.getTotalUploadSpeed();
+            int fileDownloadSpeed = Math.min(downloadSpeed, totalUploadSpeedOfFile);
+            int downloadedFileSize = fileToBeDownloaded.getFileSize();
+
+            float downloadCompletionTime = downloadedFileSize / fileDownloadSpeed;
+
+            satisfaction += downloadCompletionTime;
+            amountDownloaded += downloadedFileSize;
+            updateShareRatio();
+
+            for (Peer seeder : seeders.values()) {
+                float amountUploadedBySeeder = (uploadSpeed/totalUploadSpeedOfFile) * downloadedFileSize;
+                seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
+                seeder.updateShareRatio();
+            }
+
+        }
+
+    }
+
+    private void updateShareRatio() {
+        //TODO: should add our proposed non-linear SRE logic instead of direct calculation in future
+        shareRatio = amountUploaded/amountDownloaded;
+    }
+
+    public Map<Integer, SharedFile> getSharedFiles() {
+        return sharedFiles;
+    }
+
+    public void setSharedFiles(Map<Integer, SharedFile> sharedFiles) {
+        this.sharedFiles = sharedFiles;
+    }
+
+
+}
