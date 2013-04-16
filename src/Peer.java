@@ -168,7 +168,8 @@ public class Peer implements Runnable{
         if (seeders.isEmpty()) {
             satisfaction -= DISSATISFACTION_PENALTY;
             ++disappointmentCount;
-        } else {
+        }
+        else {
             int totalUploadSpeedOfFile = fileToBeDownloaded.getTotalUploadSpeed();
             int fileDownloadSpeed = Math.min(downloadSpeed, totalUploadSpeedOfFile);
             int downloadedFileSize = fileToBeDownloaded.getFileSize();
@@ -178,7 +179,13 @@ public class Peer implements Runnable{
             satisfaction += downloadCompletionTime;
             ++satisfactionCount;
             amountDownloaded += downloadedFileSize;
-            updateShareRatio();
+            float probableShareRatio;
+            probableShareRatio = updateShareRatio();
+            if (probableShareRatio < Main.MIN_SHARE_RATIO) {
+                //System.out.println("Share Ratio: " + shareRatio);
+                return;
+            }
+            shareRatio = probableShareRatio;
 
             for (Peer seeder : seeders.values()) {
                 float amountUploadedBySeeder = (uploadSpeed / totalUploadSpeedOfFile) * downloadedFileSize;
@@ -190,9 +197,9 @@ public class Peer implements Runnable{
 
     }
 
-    private void updateShareRatio() {
+    private float updateShareRatio() {
         //TODO: should add our proposed non-linear SRE logic instead of direct calculation in future
-        shareRatio = amountUploaded / amountDownloaded;
+        return amountUploaded / amountDownloaded;
     }
 
     @Override

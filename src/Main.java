@@ -14,10 +14,11 @@ public class Main {
 
     public static final int MAX_FILE_SIZE = 2000;
     public static final int MAX_NO_OF_FILES = 100;
-    public static final int MAX_NO_OF_PEERS = 20;
-    public static final int FILE_AVAILABILITY_MODULO = 10;
+    public static final int MAX_NO_OF_PEERS = 50;
+    public static final int FILE_AVAILABILITY_MODULO = 20;
     public static final int MAX_NO_OF_ACTIONS = 3;
     public static final int MAX_NO_OF_ROUNDS_PER_PEER = 50000;
+    public static final float MIN_SHARE_RATIO = 0.5f;
 
     private static final Map<Integer, Integer> bandwidthMap;
     static {
@@ -48,6 +49,14 @@ public class Main {
 
         for (Peer peer : listOfPeers) {
             peer.getThread().start();
+        }
+
+        for (Peer peer : listOfPeers) {
+            try {
+                peer.getThread().join();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         for (Peer peer : listOfPeers) {
@@ -95,9 +104,9 @@ public class Main {
             int bandwidthMapIndex = bandwidthChooser.nextInt(bandwidthMap.size());
             peer.setUploadSpeed(bandwidthMap.get(bandwidthMapIndex));
             peer.setDownloadSpeed(bandwidthMap.get(bandwidthMapIndex));
-            peer.setAmountDownloaded(1);
-            peer.setAmountUploaded(1);
-
+            peer.setAmountDownloaded(MAX_FILE_SIZE);
+            peer.setAmountUploaded(MAX_FILE_SIZE);
+            peer.setShareRatio(1.0f);
             listOfPeers.add(peer);
         }
         return listOfPeers;
