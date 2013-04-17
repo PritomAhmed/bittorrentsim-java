@@ -1,5 +1,3 @@
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -13,45 +11,47 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Main {
 
     public static final int MAX_FILE_SIZE = 2000;
-    public static final int MAX_NO_OF_FILES = 100;
+    public static final int MAX_NO_OF_FILES = 25000;
     public static final int MAX_NO_OF_PEERS = 50;
-    public static final int FILE_AVAILABILITY_MODULO = 20;
+    public static final int FILE_AVAILABILITY_MODULO = 100;
     public static final int MAX_NO_OF_ACTIONS = 3;
     public static final int MAX_NO_OF_ROUNDS_PER_PEER = 50000;
     public static final float MIN_SHARE_RATIO = 0.5f;
+    public static final int FILE_SHARE_PROBABILITY = 99;
 
     private static final Map<Integer, Integer> bandwidthMap;
+
     static {
         Map bandMap = new HashMap<Integer, Integer>();
-        bandMap.put(0,128);
-        bandMap.put(1,256);
-        bandMap.put(2,512);
-        bandMap.put(3,768);
-        bandMap.put(4,1024);
-        bandMap.put(5,1536);
-        bandMap.put(6,2048);
+        bandMap.put(0, 128);
+        bandMap.put(1, 256);
+        bandMap.put(2, 512);
+        bandMap.put(3, 768);
+        bandMap.put(4, 1024);
+        bandMap.put(5, 1536);
+        bandMap.put(6, 2048);
         bandwidthMap = Collections.unmodifiableMap(bandMap);
     }
 
     public static void main(String[] args) {
 
         Map<Integer, TrackedFile> trackedFileMap = initializeTrackedFiles();
-        List<Peer> listOfPeers = createPeerList();
-        distributeFilesAmongPeers(trackedFileMap, listOfPeers);
+        Map<Integer, Peer> mapOfPeers = createPeerMap();
+        distributeFilesAmongPeers(trackedFileMap, mapOfPeers);
         //displayFileSeeders(trackedFileMap);
 
         Tracker tracker = new Tracker();
         tracker.setAvailableFiles(trackedFileMap);
 
-        for (Peer peer : listOfPeers) {
+        for (Peer peer : mapOfPeers.values()) {
             peer.setTracker(tracker);
         }
 
-        for (Peer peer : listOfPeers) {
+        for (Peer peer : mapOfPeers.values()) {
             peer.getThread().start();
         }
 
-        for (Peer peer : listOfPeers) {
+        for (Peer peer : mapOfPeers.values()) {
             try {
                 peer.getThread().join();
             } catch (InterruptedException e) {
@@ -59,7 +59,7 @@ public class Main {
             }
         }
 
-        for (Peer peer : listOfPeers) {
+        for (Peer peer : mapOfPeers.values()) {
             peer.showFinalState();
         }
     }
@@ -71,29 +71,40 @@ public class Main {
         }
     }
 
-    private static void distributeFilesAmongPeers(Map<Integer, TrackedFile> trackedFileMap, List<Peer> listOfPeers) {
+    private static void distributeFilesAmongPeers(Map<Integer, TrackedFile> trackedFileMap, Map<Integer, Peer> mapOfPeers) {
         Random moduloGenerator = new Random();
 
-        for (Peer peer : listOfPeers) {
-            for (int fileId = 1; fileId <= MAX_NO_OF_FILES; fileId++) {
-                if (fileId % (moduloGenerator.nextInt(FILE_AVAILABILITY_MODULO) + 1) == 0 && peer != null) {
-                    TrackedFile trackedFile = trackedFileMap.get(fileId);
-                    if (trackedFile != null && trackedFile.getSeeders() != null) {
-                        trackedFile.getSeeders().put(peer.getId(), peer);
+        for (int fileId = 1; fileId <= MAX_NO_OF_FILES; fileId++) {
 
-                        SharedFile file = new SharedFile();
-                        file.setId(fileId);
-                        file.setSize(trackedFile.getFileSize());
-                        file.setUploadedSize(0);
-                        peer.getSharedFiles().put(fileId, file);
+            int outerCoinToss = moduloGenerator.nextInt(FILE_AVAILABILITY_MODULO);
+            if (outerCoinToss >= FILE_SHARE_PROBABILITY) {
+                int numberOfSharingPeers = moduloGenerator.nextInt(MAX_NO_OF_PEERS);
+
+                for (int counter = 0; counter < numberOfSharingPeers; counter++) {
+                    Integer peerId = moduloGenerator.nextInt(MAX_NO_OF_PEERS) + 1;
+
+                    Peer peer = mapOfPeers.get(peerId);
+                    int innerCoinToss = moduloGenerator.nextInt(FILE_AVAILABILITY_MODULO);
+                    //System.out.println(coinToss);
+                    if (innerCoinToss >= FILE_SHARE_PROBABILITY && peer != null) {
+                        TrackedFile trackedFile = trackedFileMap.get(fileId);
+                        if (trackedFile != null && trackedFile.getSeeders() != null) {
+                            trackedFile.getSeeders().put(peer.getId(), peer);
+
+                            SharedFile file = new SharedFile();
+                            file.setId(fileId);
+                            file.setSize(trackedFile.getFileSize());
+                            file.setUploadedSize(0);
+                            peer.getSharedFiles().put(fileId, file);
+                        }
                     }
                 }
             }
         }
     }
 
-    private static List<Peer> createPeerList() {
-        List<Peer> listOfPeers = new ArrayList<Peer>();
+    private static Map<Integer, Peer> createPeerMap() {
+        Map<Integer, Peer> mapOfPeers = new LinkedHashMap<Integer, Peer>();
         Random bandwidthChooser = new Random();
 
         for (int peerId = 1; peerId <= MAX_NO_OF_PEERS; peerId++) {
@@ -107,9 +118,9 @@ public class Main {
             peer.setAmountDownloaded(MAX_FILE_SIZE);
             peer.setAmountUploaded(MAX_FILE_SIZE);
             peer.setShareRatio(1.0f);
-            listOfPeers.add(peer);
+            mapOfPeers.put(peerId, peer);
         }
-        return listOfPeers;
+        return mapOfPeers;
     }
 
     private static Map<Integer, TrackedFile> initializeTrackedFiles() {
@@ -128,7 +139,6 @@ public class Main {
         }
         return trackedFileMap;
     }
-
 
 
 }
