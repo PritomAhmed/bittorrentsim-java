@@ -1,3 +1,5 @@
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -55,6 +57,15 @@ public class Tracker{
 
     private void shareFile(Peer peer, int fileId) {
         TrackedFile selectedFile = availableFiles.get(fileId);
+
+        while (peer.getCurrentUsedStorage() + selectedFile.getFileSize() > peer.getStorageCapacity()) {
+            //System.out.println("Removing unprofitable files");
+            peer.convertToList();
+            List<SharedFile> sharedFileList = peer.getSharedFileList();
+            int idOfFileToBeRemoved = sharedFileList.get(0).getId();
+            stopSharingFile(peer, idOfFileToBeRemoved);
+        }
+
         selectedFile.getSeeders().put(peer.getId(), peer);
 
         SharedFile newSharedFile = new SharedFile();

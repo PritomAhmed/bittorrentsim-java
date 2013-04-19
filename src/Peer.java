@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -18,11 +19,12 @@ public class Peer implements Runnable {
     private float satisfaction;
     private int satisfactionCount;
     private int disappointmentCount;
-    private long storageCapacity;
+    private int storageCapacity;
     private int downloadSpeed;
     private int uploadSpeed;
     private Tracker tracker;
     private Map<Integer, SharedFile> sharedFiles;
+    private List<SharedFile> sharedFileList;
     private Thread thread;
     private int downloadCount;
     private int shareCount;
@@ -90,11 +92,11 @@ public class Peer implements Runnable {
         this.shareRatio = shareRatio;
     }
 
-    public long getStorageCapacity() {
+    public int getStorageCapacity() {
         return storageCapacity;
     }
 
-    public void setStorageCapacity(long storageCapacity) {
+    public void setStorageCapacity(int storageCapacity) {
         this.storageCapacity = storageCapacity;
     }
 
@@ -162,11 +164,12 @@ public class Peer implements Runnable {
         this.uploadCount = uploadCount;
     }
 
-    public void showSharedFiles() {
-        System.out.println("TOTAL FILES : " + sharedFiles.size());
-        for (int sharedFileId : sharedFiles.keySet()) {
-            System.out.println("Id : " + sharedFileId + ", size : " + sharedFiles.get(sharedFileId).getSize() + ", uploadedSize : " + sharedFiles.get(sharedFileId).getUploadedSize());
-        }
+    public List<SharedFile> getSharedFileList() {
+        return sharedFileList;
+    }
+
+    public void setSharedFileList(List<SharedFile> sharedFileList) {
+        this.sharedFileList = sharedFileList;
     }
 
     public void simulatePeer() {
@@ -229,6 +232,10 @@ public class Peer implements Runnable {
                 seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
                 seeder.updateShareRatio();
                 seeder.setUploadCount(seeder.getUploadCount() + 1);
+                SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
+                if (copyOfFileOfSeeder != null) {
+                    copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
+                }
             }
 
         }
@@ -240,9 +247,9 @@ public class Peer implements Runnable {
         shareRatio = amountUploaded / amountDownloaded;
     }
 
-    private float calculateProbableShareRatio (float downloadedFileSize) {
+    private float calculateProbableShareRatio(float downloadedFileSize) {
         float probableDownloadedFileSize = amountDownloaded + downloadedFileSize;
-        return amountUploaded/probableDownloadedFileSize;
+        return amountUploaded / probableDownloadedFileSize;
     }
 
     @Override
@@ -255,5 +262,25 @@ public class Peer implements Runnable {
     public void showFinalState() {
         System.out.println("Share Ratio: " + shareRatio + " , Satisfaction: " + satisfaction + "(" + satisfactionCount + "/" + disappointmentCount
                 + ") , AmountDownloaded: " + amountDownloaded + " , AmountUploaded: " + amountUploaded + " , DownloadCount: " + downloadCount + " , UploadCount: " + uploadCount);
+    }
+
+    public void showSharedFiles() {
+        System.out.println("TOTAL FILES : " + sharedFiles.size());
+        for (SharedFile sharedFile : sharedFileList) {
+            sharedFile.showState();
+        }
+    }
+
+    public void convertToList() {
+        sharedFileList = new ArrayList<SharedFile>(sharedFiles.values());
+    }
+
+    public int getCurrentUsedStorage() {
+        int currentUsedStorage = 0;
+
+        for (SharedFile sharedFile : sharedFiles.values()) {
+            currentUsedStorage+=sharedFile.getSize();
+        }
+        return currentUsedStorage;
     }
 }

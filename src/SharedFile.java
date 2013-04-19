@@ -5,11 +5,11 @@
  * Time: 10:27 AM
  * To change this template use File | Settings | File Templates.
  */
-public class SharedFile {
+public class SharedFile implements Comparable {
 
     private int id;
     private int size;
-    private int uploadedSize;
+    private float uploadedSize;
 
 
     public int getId() {
@@ -28,11 +28,31 @@ public class SharedFile {
         this.size = size;
     }
 
-    public int getUploadedSize() {
+    public float getUploadedSize() {
         return uploadedSize;
     }
 
-    public void setUploadedSize(int uploadedSize) {
+    public void setUploadedSize(float uploadedSize) {
         this.uploadedSize = uploadedSize;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        SharedFile comparedFile = (SharedFile) o;
+        float ownUploadRatio = uploadedSize/(float)size;
+        float comparedFileUploadRatio = comparedFile.getUploadedSize()/(float)comparedFile.getSize();
+
+        if (ownUploadRatio < comparedFileUploadRatio) {
+            return -1;
+        }
+        else if (ownUploadRatio > comparedFileUploadRatio) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public void showState() {
+        System.out.println("Id: " + id +" Size: " + size +" Uploaded: " + uploadedSize + " Ratio: " + uploadedSize/size);
     }
 }
