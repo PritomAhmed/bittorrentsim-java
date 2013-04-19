@@ -24,6 +24,7 @@ public class Peer implements Runnable {
     private int uploadSpeed;
     private Tracker tracker;
     private Map<Integer, SharedFile> sharedFiles;
+    private Map<Integer, SharedFile> previouslySharedFiles;
     private List<SharedFile> sharedFileList;
     private Thread thread;
     private int downloadCount;
@@ -181,6 +182,14 @@ public class Peer implements Runnable {
         this.requestHonouredCount = requestHonouredCount;
     }
 
+    public Map<Integer, SharedFile> getPreviouslySharedFiles() {
+        return previouslySharedFiles;
+    }
+
+    public void setPreviouslySharedFiles(Map<Integer, SharedFile> previouslySharedFiles) {
+        this.previouslySharedFiles = previouslySharedFiles;
+    }
+
     public void simulatePeer() {
 
         Random random = new Random();
@@ -202,8 +211,26 @@ public class Peer implements Runnable {
             return;
         }
 
+        if (selectedPeerAction == PeerAction.SHARE) {
+            //System.out.println("Honouring request");
+            selectedFileId = chooseRequestedFileToShare(selectedFileId);
+        }
+
         tracker.sendMessage(this, selectedAction, selectedFileId);
 
+    }
+
+    private int chooseRequestedFileToShare(int selectedFileId) {
+        if (!tracker.getRequestedFiles().isEmpty()) {
+            for (int requestedFileId : tracker.getRequestedFiles().keySet()) {
+                if (previouslySharedFiles.containsKey(requestedFileId)) {
+                    selectedFileId = requestedFileId;
+                    previouslySharedFiles.remove(requestedFileId);
+                    break;
+                }
+            }
+        }
+        return selectedFileId;
     }
 
     public void downloadFile(TrackedFile fileToBeDownloaded) {
@@ -238,24 +265,43 @@ public class Peer implements Runnable {
             ++downloadCount;
 
             for (Peer seeder : seeders.values()) {
-                float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
-                //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
-                seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
-                seeder.updateShareRatio();
-                seeder.setUploadCount(seeder.getUploadCount() + 1);
-                SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
-                if (copyOfFileOfSeeder != null) {
-                    copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
-                }
+                upload(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
             }
 
         }
 
     }
 
+    private void upload(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
+        SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
+        if (copyOfFileOfSeeder != null) {
+            float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
+            //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
+            seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
+            seeder.updateShareRatio();
+            seeder.setUploadCount(seeder.getUploadCount() + 1);
+            copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
+        }
+    }
+
     private void updateShareRatio() {
         //TODO: should add our proposed non-linear SRE logic instead of direct calculation in future
         shareRatio = amountUploaded / amountDownloaded;
+    }
+
+    private void uploadWithHonouredRequests(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
+        SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
+        if (copyOfFileOfSeeder != null) {
+            float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
+            if (copyOfFileOfSeeder.isRequested()) {
+                amountUploadedBySeeder*=Main.RESEED_BONUS_FACTOR;
+            }
+            //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
+            seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
+            seeder.updateShareRatio();
+            seeder.setUploadCount(seeder.getUploadCount() + 1);
+            copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
+        }
     }
 
     private float calculateProbableShareRatio(float downloadedFileSize) {

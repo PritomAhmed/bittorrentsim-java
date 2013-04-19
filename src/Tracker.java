@@ -61,7 +61,9 @@ public class Tracker{
     private void stopSharingFile(Peer peer, int fileId) {
         TrackedFile selectedFile = availableFiles.get(fileId);
         selectedFile.getSeeders().remove(peer.getId());
+        SharedFile deletedFile = peer.getSharedFiles().get(fileId);
         peer.getSharedFiles().remove(fileId);
+        peer.getPreviouslySharedFiles().put(fileId, deletedFile);
     }
 
     private void shareFile(Peer peer, int fileId) {

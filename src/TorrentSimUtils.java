@@ -86,6 +86,7 @@ public class TorrentSimUtils {
             Peer peer = new Peer();
             peer.setId(peerId);
             peer.setSharedFiles(new ConcurrentHashMap<Integer, SharedFile>());
+            peer.setPreviouslySharedFiles(new ConcurrentHashMap<Integer, SharedFile>());
 
             int bandwidthMapIndex = bandwidthChooser.nextInt(Main.bandwidthMap.size());
             int storageMapCapIndex = storageCapChooser.nextInt(Main.storageCapMap.size());
