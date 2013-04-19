@@ -9,7 +9,7 @@ import java.util.Random;
  * Time: 10:26 AM
  * To change this template use File | Settings | File Templates.
  */
-public class Peer implements Runnable{
+public class Peer implements Runnable {
 
     private int id;
     private float amountDownloaded;
@@ -168,11 +168,16 @@ public class Peer implements Runnable{
         if (seeders.isEmpty()) {
             satisfaction -= DISSATISFACTION_PENALTY;
             ++disappointmentCount;
-        }
-        else {
+        } else {
             int totalUploadSpeedOfFile = fileToBeDownloaded.getTotalUploadSpeed();
             int fileDownloadSpeed = Math.min(downloadSpeed, totalUploadSpeedOfFile);
             int downloadedFileSize = fileToBeDownloaded.getFileSize();
+
+            if (fileDownloadSpeed == 0) {                       //peers have stopped sharing the file
+                satisfaction -= DISSATISFACTION_PENALTY;
+                ++disappointmentCount;
+                return;
+            }
 
             float downloadCompletionTime = downloadedFileSize / fileDownloadSpeed;
 
@@ -204,7 +209,7 @@ public class Peer implements Runnable{
 
     @Override
     public void run() {
-        for (int i = 0; i<Main.MAX_NO_OF_ROUNDS_PER_PEER; i++) {
+        for (int i = 0; i < Main.MAX_NO_OF_ROUNDS_PER_PEER; i++) {
             simulatePeer();
         }
     }

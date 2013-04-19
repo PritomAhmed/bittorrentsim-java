@@ -11,11 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Main {
 
     public static final int MAX_FILE_SIZE = 2000;
-    public static final int MAX_NO_OF_FILES = 25000;
-    public static final int MAX_NO_OF_PEERS = 50;
+    public static final int MAX_NO_OF_FILES = 500;
+    public static final int MAX_NO_OF_PEERS = 10;
     public static final int FILE_AVAILABILITY_MODULO = 100;
     public static final int MAX_NO_OF_ACTIONS = 3;
-    public static final int MAX_NO_OF_ROUNDS_PER_PEER = 50000;
+    public static final int MAX_NO_OF_ROUNDS_PER_PEER = 1000;
     public static final float MIN_SHARE_RATIO = 0.5f;
     public static final int FILE_SHARE_PROBABILITY = 99;
 
