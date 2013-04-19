@@ -64,6 +64,7 @@ public class Tracker{
         newSharedFile.setUploadedSize(0);
 
         peer.getSharedFiles().put(fileId, newSharedFile);
+        peer.setShareCount(peer.getShareCount() + 1);
     }
 
     private void download(Peer peer, int fileId) {

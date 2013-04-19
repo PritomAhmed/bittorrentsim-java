@@ -10,14 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Main {
 
-    public static final int MAX_FILE_SIZE = 2000;
-    public static final int MAX_NO_OF_FILES = 500;
-    public static final int MAX_NO_OF_PEERS = 10;
+    public static final int MAX_FILE_SIZE = 5000;
+    public static final int MAX_NO_OF_FILES = 1000;
+    public static final int MAX_NO_OF_PEERS = 50;
     public static final int FILE_AVAILABILITY_MODULO = 100;
     public static final int MAX_NO_OF_ACTIONS = 3;
-    public static final int MAX_NO_OF_ROUNDS_PER_PEER = 1000;
+    public static final int MAX_NO_OF_ROUNDS_PER_PEER = 2000;
     public static final float MIN_SHARE_RATIO = 0.5f;
-    public static final int FILE_SHARE_PROBABILITY = 99;
+    public static final int FILE_SHARE_PROBABILITY = 50;
 
     private static final Map<Integer, Integer> bandwidthMap;
 
@@ -62,6 +62,8 @@ public class Main {
         for (Peer peer : mapOfPeers.values()) {
             peer.showFinalState();
         }
+
+        System.out.println("Total Satisfaction: " + calculateTotalSatisfaction(mapOfPeers));
     }
 
     private static void displayFileSeeders(Map<Integer, TrackedFile> trackedFileMap) {
@@ -85,7 +87,6 @@ public class Main {
 
                     Peer peer = mapOfPeers.get(peerId);
                     int innerCoinToss = moduloGenerator.nextInt(FILE_AVAILABILITY_MODULO);
-                    //System.out.println(coinToss);
                     if (innerCoinToss >= FILE_SHARE_PROBABILITY && peer != null) {
                         TrackedFile trackedFile = trackedFileMap.get(fileId);
                         if (trackedFile != null && trackedFile.getSeeders() != null) {
@@ -101,6 +102,23 @@ public class Main {
                 }
             }
         }
+
+        /*for (Peer peer : mapOfPeers.values()) {
+            for (int fileId = 1; fileId <= MAX_NO_OF_FILES; fileId++) {
+                if (fileId % (moduloGenerator.nextInt(FILE_AVAILABILITY_MODULO) + 1) == 0 && peer != null) {
+                    TrackedFile trackedFile = trackedFileMap.get(fileId);
+                    if (trackedFile != null && trackedFile.getSeeders() != null) {
+                        trackedFile.getSeeders().put(peer.getId(), peer);
+
+                        SharedFile file = new SharedFile();
+                        file.setId(fileId);
+                        file.setSize(trackedFile.getFileSize());
+                        file.setUploadedSize(0);
+                        peer.getSharedFiles().put(fileId, file);
+                    }
+                }
+            }
+        }*/
     }
 
     private static Map<Integer, Peer> createPeerMap() {
@@ -115,9 +133,9 @@ public class Main {
             int bandwidthMapIndex = bandwidthChooser.nextInt(bandwidthMap.size());
             peer.setUploadSpeed(bandwidthMap.get(bandwidthMapIndex));
             peer.setDownloadSpeed(bandwidthMap.get(bandwidthMapIndex));
-            peer.setAmountDownloaded(MAX_FILE_SIZE);
+            peer.setAmountDownloaded(MAX_FILE_SIZE/5);
             peer.setAmountUploaded(MAX_FILE_SIZE);
-            peer.setShareRatio(1.0f);
+            peer.setShareRatio(5.0f);
             mapOfPeers.put(peerId, peer);
         }
         return mapOfPeers;
@@ -138,6 +156,16 @@ public class Main {
             trackedFileMap.put(fileId, trackedFile);
         }
         return trackedFileMap;
+    }
+
+    public static float calculateTotalSatisfaction(Map<Integer, Peer> mapOfPeers) {
+        float totalSatisfaction = 0.0f;
+
+        for (Peer peer : mapOfPeers.values()) {
+            totalSatisfaction+=peer.getSatisfaction();
+        }
+
+        return totalSatisfaction;
     }
 
 

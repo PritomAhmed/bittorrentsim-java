@@ -24,6 +24,9 @@ public class Peer implements Runnable {
     private Tracker tracker;
     private Map<Integer, SharedFile> sharedFiles;
     private Thread thread;
+    private int downloadCount;
+    private int shareCount;
+    private int uploadCount;
 
     private static final int DISSATISFACTION_PENALTY = 5;
 
@@ -135,6 +138,30 @@ public class Peer implements Runnable {
         this.thread = thread;
     }
 
+    public int getDownloadCount() {
+        return downloadCount;
+    }
+
+    public void setDownloadCount(int downloadCount) {
+        this.downloadCount = downloadCount;
+    }
+
+    public int getShareCount() {
+        return shareCount;
+    }
+
+    public void setShareCount(int shareCount) {
+        this.shareCount = shareCount;
+    }
+
+    public int getUploadCount() {
+        return uploadCount;
+    }
+
+    public void setUploadCount(int uploadCount) {
+        this.uploadCount = uploadCount;
+    }
+
     public void showSharedFiles() {
         System.out.println("TOTAL FILES : " + sharedFiles.size());
         for (int sharedFileId : sharedFiles.keySet()) {
@@ -150,6 +177,11 @@ public class Peer implements Runnable {
         PeerAction selectedPeerAction = PeerAction.values()[selectedActionIndex];
         String selectedAction = selectedPeerAction.getAction();
 
+        if (shareRatio == Main.MIN_SHARE_RATIO) {
+            selectedPeerAction = PeerAction.SHARE;
+            selectedAction = PeerAction.SHARE.getAction();
+        }
+
         if (selectedPeerAction == PeerAction.DOWNLOAD && sharedFiles.containsKey(selectedFileId)) {
             return;
         } else if (selectedPeerAction == PeerAction.SHARE && sharedFiles.containsKey(selectedFileId)) {
@@ -163,7 +195,6 @@ public class Peer implements Runnable {
     }
 
     public void downloadFile(TrackedFile fileToBeDownloaded) {
-        //TODO : add download logic
         Map<Integer, Peer> seeders = fileToBeDownloaded.getSeeders();
         if (seeders.isEmpty()) {
             satisfaction -= DISSATISFACTION_PENALTY;
@@ -173,38 +204,45 @@ public class Peer implements Runnable {
             int fileDownloadSpeed = Math.min(downloadSpeed, totalUploadSpeedOfFile);
             int downloadedFileSize = fileToBeDownloaded.getFileSize();
 
-            if (fileDownloadSpeed == 0) {                       //peers have stopped sharing the file
+            if (fileDownloadSpeed == 0) {                       //peers have suddenly stopped sharing the file
                 satisfaction -= DISSATISFACTION_PENALTY;
                 ++disappointmentCount;
                 return;
             }
 
-            float downloadCompletionTime = downloadedFileSize / fileDownloadSpeed;
-
-            satisfaction += downloadCompletionTime;
-            ++satisfactionCount;
-            amountDownloaded += downloadedFileSize;
-            float probableShareRatio;
-            probableShareRatio = updateShareRatio();
+            float probableShareRatio = calculateProbableShareRatio(downloadedFileSize);
             if (probableShareRatio < Main.MIN_SHARE_RATIO) {
                 //System.out.println("Share Ratio: " + shareRatio);
                 return;
             }
+            amountDownloaded += downloadedFileSize;
+
+            float downloadCompletionTime = downloadedFileSize / fileDownloadSpeed;
+            satisfaction += downloadCompletionTime;
+            ++satisfactionCount;
             shareRatio = probableShareRatio;
+            ++downloadCount;
 
             for (Peer seeder : seeders.values()) {
-                float amountUploadedBySeeder = (uploadSpeed / totalUploadSpeedOfFile) * downloadedFileSize;
+                float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
+                //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
                 seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
                 seeder.updateShareRatio();
+                seeder.setUploadCount(seeder.getUploadCount() + 1);
             }
 
         }
 
     }
 
-    private float updateShareRatio() {
+    private void updateShareRatio() {
         //TODO: should add our proposed non-linear SRE logic instead of direct calculation in future
-        return amountUploaded / amountDownloaded;
+        shareRatio = amountUploaded / amountDownloaded;
+    }
+
+    private float calculateProbableShareRatio (float downloadedFileSize) {
+        float probableDownloadedFileSize = amountDownloaded + downloadedFileSize;
+        return amountUploaded/probableDownloadedFileSize;
     }
 
     @Override
@@ -216,6 +254,6 @@ public class Peer implements Runnable {
 
     public void showFinalState() {
         System.out.println("Share Ratio: " + shareRatio + " , Satisfaction: " + satisfaction + "(" + satisfactionCount + "/" + disappointmentCount
-                + ") , AmountDownloaded: " + amountDownloaded + " , AmountUploaded: " + amountUploaded);
+                + ") , AmountDownloaded: " + amountDownloaded + " , AmountUploaded: " + amountUploaded + " , DownloadCount: " + downloadCount + " , UploadCount: " + uploadCount);
     }
 }
