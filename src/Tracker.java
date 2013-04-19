@@ -13,6 +13,7 @@ public class Tracker{
 
     private String URL;
     private Map<Integer, TrackedFile> availableFiles;
+    private Map<Integer, TrackedFile> requestedFiles;
 
     public String getURL() {
         return URL;
@@ -28,6 +29,14 @@ public class Tracker{
 
     public void setAvailableFiles(Map<Integer, TrackedFile> availableFiles) {
         this.availableFiles = availableFiles;
+    }
+
+    public Map<Integer, TrackedFile> getRequestedFiles() {
+        return requestedFiles;
+    }
+
+    public void setRequestedFiles(Map<Integer, TrackedFile> requestedFiles) {
+        this.requestedFiles = requestedFiles;
     }
 
     public void sendMessage(Peer peer, String selectedAction, int fileId){
@@ -76,6 +85,12 @@ public class Tracker{
 
         peer.getSharedFiles().put(fileId, newSharedFile);
         peer.setShareCount(peer.getShareCount() + 1);
+
+        if (requestedFiles.containsKey(fileId)) {
+            peer.setRequestHonouredCount(peer.getRequestHonouredCount()+ 1);
+            peer.getSharedFiles().get(fileId).setRequested(true);
+            requestedFiles.remove(fileId);
+        }
     }
 
     private void download(Peer peer, int fileId) {

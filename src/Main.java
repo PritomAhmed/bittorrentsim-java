@@ -63,6 +63,7 @@ public class Main {
 
         Tracker tracker = new Tracker();
         tracker.setAvailableFiles(trackedFileMap);
+        tracker.setRequestedFiles(new ConcurrentHashMap<Integer, TrackedFile>());
 
         for (Peer peer : mapOfPeers.values()) {
             peer.setTracker(tracker);

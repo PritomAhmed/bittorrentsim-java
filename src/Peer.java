@@ -29,6 +29,7 @@ public class Peer implements Runnable {
     private int downloadCount;
     private int shareCount;
     private int uploadCount;
+    private int requestHonouredCount;
 
     private static final int DISSATISFACTION_PENALTY = 5;
 
@@ -172,6 +173,14 @@ public class Peer implements Runnable {
         this.sharedFileList = sharedFileList;
     }
 
+    public int getRequestHonouredCount() {
+        return requestHonouredCount;
+    }
+
+    public void setRequestHonouredCount(int requestHonouredCount) {
+        this.requestHonouredCount = requestHonouredCount;
+    }
+
     public void simulatePeer() {
 
         Random random = new Random();
@@ -202,6 +211,7 @@ public class Peer implements Runnable {
         if (seeders.isEmpty()) {
             satisfaction -= DISSATISFACTION_PENALTY;
             ++disappointmentCount;
+            tracker.getRequestedFiles().put(fileToBeDownloaded.getId(), fileToBeDownloaded);
         } else {
             int totalUploadSpeedOfFile = fileToBeDownloaded.getTotalUploadSpeed();
             int fileDownloadSpeed = Math.min(downloadSpeed, totalUploadSpeedOfFile);
@@ -210,6 +220,7 @@ public class Peer implements Runnable {
             if (fileDownloadSpeed == 0) {                       //peers have suddenly stopped sharing the file
                 satisfaction -= DISSATISFACTION_PENALTY;
                 ++disappointmentCount;
+                tracker.getRequestedFiles().put(fileToBeDownloaded.getId(), fileToBeDownloaded);
                 return;
             }
 
@@ -261,7 +272,8 @@ public class Peer implements Runnable {
 
     public void showFinalState() {
         System.out.println("Share Ratio: " + shareRatio + " , Satisfaction: " + satisfaction + "(" + satisfactionCount + "/" + disappointmentCount
-                + ") , AmountDownloaded: " + amountDownloaded + " , AmountUploaded: " + amountUploaded + " , DownloadCount: " + downloadCount + " , UploadCount: " + uploadCount);
+                + ") , AmountDownloaded: " + amountDownloaded + " , AmountUploaded: " + amountUploaded + " , DownloadCount: " + downloadCount
+                + " , UploadCount: " + uploadCount + " , Requests Honored: " + requestHonouredCount);
     }
 
     public void showSharedFiles() {
