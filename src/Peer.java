@@ -227,19 +227,23 @@ public class Peer implements Runnable {
             ++downloadCount;
 
             for (Peer seeder : seeders.values()) {
-                float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
-                //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
-                seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
-                seeder.updateShareRatio();
-                seeder.setUploadCount(seeder.getUploadCount() + 1);
-                SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
-                if (copyOfFileOfSeeder != null) {
-                    copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
-                }
+                uploadFile(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
             }
 
         }
 
+    }
+
+    private void uploadFile(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
+        SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
+        if (copyOfFileOfSeeder != null) {
+            float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
+            //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
+            seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
+            seeder.updateShareRatio();
+            seeder.setUploadCount(seeder.getUploadCount() + 1);
+            copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
+        }
     }
 
     private void updateShareRatio() {
