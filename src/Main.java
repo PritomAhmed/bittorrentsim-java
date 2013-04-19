@@ -1,3 +1,6 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -63,7 +66,26 @@ public class Main {
             peer.showFinalState();
         }
 
-        System.out.println("Total Satisfaction: " + calculateTotalSatisfaction(mapOfPeers));
+        float totalSatisfaction =  calculateTotalSatisfaction(mapOfPeers);
+
+        System.out.println("Total Satisfaction: " + totalSatisfaction);
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("result.csv",true));
+            writer.newLine();
+            StringBuilder resultString = new StringBuilder();
+            resultString.append(new Date().toString() + ",");
+            resultString.append(MAX_NO_OF_FILES + ",");
+            resultString.append(MAX_NO_OF_PEERS + ",");
+            resultString.append(MIN_SHARE_RATIO + ",");
+            resultString.append(MAX_NO_OF_ROUNDS_PER_PEER + ",");
+            resultString.append(totalSatisfaction);
+
+            writer.append(resultString);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
     }
 
     private static void displayFileSeeders(Map<Integer, TrackedFile> trackedFileMap) {
