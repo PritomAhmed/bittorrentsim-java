@@ -86,6 +86,7 @@ public class TorrentSimUtils {
             Peer peer = new Peer();
             peer.setId(peerId);
             peer.setSharedFiles(new ConcurrentHashMap<Integer, SharedFile>());
+            peer.setPreviouslySharedFiles(new ConcurrentHashMap<Integer, SharedFile>());
 
             int bandwidthMapIndex = bandwidthChooser.nextInt(Main.bandwidthMap.size());
             int storageMapCapIndex = storageCapChooser.nextInt(Main.storageCapMap.size());
@@ -132,7 +133,7 @@ public class TorrentSimUtils {
 
     public static void writeResultToFile(float totalSatisfaction) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("result.csv", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("resultWithHonourRequest.csv", true));
             writer.newLine();
             StringBuilder resultString = new StringBuilder();
             resultString.append(new Date().toString() + ",");

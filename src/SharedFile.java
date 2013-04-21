@@ -10,6 +10,7 @@ public class SharedFile implements Comparable {
     private int id;
     private int size;
     private float uploadedSize;
+    private boolean requested;
 
 
     public int getId() {
@@ -34,6 +35,14 @@ public class SharedFile implements Comparable {
 
     public void setUploadedSize(float uploadedSize) {
         this.uploadedSize = uploadedSize;
+    }
+
+    public boolean isRequested() {
+        return requested;
+    }
+
+    public void setRequested(boolean requested) {
+        this.requested = requested;
     }
 
     @Override
