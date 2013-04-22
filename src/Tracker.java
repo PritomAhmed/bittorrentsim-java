@@ -73,6 +73,7 @@ public class Tracker{
             //System.out.println("Removing unprofitable files");
             peer.convertToList();
             List<SharedFile> sharedFileList = peer.getSharedFileList();
+            Collections.sort(sharedFileList);
             int idOfFileToBeRemoved = sharedFileList.get(0).getId();
             stopSharingFile(peer, idOfFileToBeRemoved);
         }

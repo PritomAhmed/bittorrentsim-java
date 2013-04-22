@@ -56,7 +56,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-
+        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         Map<Integer, TrackedFile> trackedFileMap = TorrentSimUtils.initializeTrackedFiles();
         Map<Integer, Peer> mapOfPeers = TorrentSimUtils.createPeerMap();
         TorrentSimUtils.distributeFilesAmongPeers(trackedFileMap, mapOfPeers);

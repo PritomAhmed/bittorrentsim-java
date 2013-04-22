@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -330,7 +327,7 @@ public class Peer implements Runnable {
     }
 
     public void convertToList() {
-        sharedFileList = new ArrayList<SharedFile>(sharedFiles.values());
+        sharedFileList = Collections.synchronizedList(new ArrayList<SharedFile>(sharedFiles.values()));
     }
 
     public int getCurrentUsedStorage() {
