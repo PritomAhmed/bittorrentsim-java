@@ -250,6 +250,9 @@ public class Peer implements Runnable {
         if (copyOfFileOfSeeder != null) {
             float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
             //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
+            if (fileToBeDownloaded.isRare()) {
+                 amountUploadedBySeeder*=Main.RARE_FILE_BONUS_FACTOR;
+            }
             seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
             seeder.updateShareRatio();
             seeder.setUploadCount(seeder.getUploadCount() + 1);
