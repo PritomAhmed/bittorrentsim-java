@@ -1,6 +1,7 @@
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -64,6 +65,7 @@ public class Tracker{
             List<SharedFile> sharedFileList = peer.getSharedFileList();
             Collections.sort(sharedFileList);
             int idOfFileToBeRemoved = sharedFileList.get(0).getId();
+            idOfFileToBeRemoved = chooseFileForDeletion(sharedFileList, idOfFileToBeRemoved);
             stopSharingFile(peer, idOfFileToBeRemoved);
         }
 
@@ -77,6 +79,25 @@ public class Tracker{
 
         peer.getSharedFiles().put(fileId, newSharedFile);
         peer.setShareCount(peer.getShareCount() + 1);
+    }
+
+    private int chooseFileForDeletion(List<SharedFile> sharedFileList, int idOfFileToBeRemoved) {
+        for (SharedFile sharedFile : sharedFileList) {
+            TrackedFile copyOfFileInTracker = availableFiles.get(sharedFile.getId());
+            if (!copyOfFileInTracker.isRare()) {
+                idOfFileToBeRemoved = sharedFile.getId();
+                break;
+            }
+            else {
+                Random random = new Random();
+                int coinToss = random.nextInt(100);    //toss a coin to determine whether to delete a rare shared file
+                if (coinToss > Main.RARE_FILE_DELETE_PROBABILITY) {
+                    idOfFileToBeRemoved = sharedFile.getId();
+                    break;
+                }
+            }
+        }
+        return idOfFileToBeRemoved;
     }
 
     private void download(Peer peer, int fileId) {
