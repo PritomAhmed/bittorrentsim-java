@@ -1,6 +1,7 @@
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created with IntelliJ IDEA.
@@ -13,6 +14,7 @@ public class Tracker{
 
     private String URL;
     private Map<Integer, TrackedFile> availableFiles;
+    private Map<Integer, TrackedFile> requestedFiles;
 
     public String getURL() {
         return URL;
@@ -28,6 +30,14 @@ public class Tracker{
 
     public void setAvailableFiles(Map<Integer, TrackedFile> availableFiles) {
         this.availableFiles = availableFiles;
+    }
+
+    public Map<Integer, TrackedFile> getRequestedFiles() {
+        return requestedFiles;
+    }
+
+    public void setRequestedFiles(Map<Integer, TrackedFile> requestedFiles) {
+        this.requestedFiles = requestedFiles;
     }
 
     public void sendMessage(Peer peer, String selectedAction, int fileId){
@@ -52,7 +62,9 @@ public class Tracker{
     private void stopSharingFile(Peer peer, int fileId) {
         TrackedFile selectedFile = availableFiles.get(fileId);
         selectedFile.getSeeders().remove(peer.getId());
+        SharedFile deletedFile = peer.getSharedFiles().get(fileId);
         peer.getSharedFiles().remove(fileId);
+        peer.getPreviouslySharedFiles().put(fileId, deletedFile);
     }
 
     private void shareFile(Peer peer, int fileId) {
@@ -64,6 +76,7 @@ public class Tracker{
             List<SharedFile> sharedFileList = peer.getSharedFileList();
             Collections.sort(sharedFileList);
             int idOfFileToBeRemoved = sharedFileList.get(0).getId();
+            idOfFileToBeRemoved = chooseFileForDeletion(sharedFileList, idOfFileToBeRemoved);
             stopSharingFile(peer, idOfFileToBeRemoved);
         }
 
@@ -77,6 +90,31 @@ public class Tracker{
 
         peer.getSharedFiles().put(fileId, newSharedFile);
         peer.setShareCount(peer.getShareCount() + 1);
+
+        if (requestedFiles.containsKey(fileId)) {
+            peer.setRequestHonouredCount(peer.getRequestHonouredCount()+ 1);
+            peer.getSharedFiles().get(fileId).setRequested(true);
+            requestedFiles.remove(fileId);
+        }
+    }
+
+    private int chooseFileForDeletion(List<SharedFile> sharedFileList, int idOfFileToBeRemoved) {
+        for (SharedFile sharedFile : sharedFileList) {
+            TrackedFile copyOfFileInTracker = availableFiles.get(sharedFile.getId());
+            if (!copyOfFileInTracker.isRare()) {
+                idOfFileToBeRemoved = sharedFile.getId();
+                break;
+            }
+            else {
+                Random random = new Random();
+                int coinToss = random.nextInt(100); //toss a coin to determine whether to delete a rare shared file
+                if (coinToss > Main.RARE_FILE_DELETE_PROBABILITY) {
+                    idOfFileToBeRemoved = sharedFile.getId();
+                    break;
+                }
+            }
+        }
+        return idOfFileToBeRemoved;
     }
 
     private void download(Peer peer, int fileId) {

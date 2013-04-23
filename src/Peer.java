@@ -21,11 +21,13 @@ public class Peer implements Runnable {
     private int uploadSpeed;
     private Tracker tracker;
     private Map<Integer, SharedFile> sharedFiles;
+    private Map<Integer, SharedFile> previouslySharedFiles;
     private List<SharedFile> sharedFileList;
     private Thread thread;
     private int downloadCount;
     private int shareCount;
     private int uploadCount;
+    private int requestHonouredCount;
 
     private static final int DISSATISFACTION_PENALTY = 5;
 
@@ -169,6 +171,22 @@ public class Peer implements Runnable {
         this.sharedFileList = sharedFileList;
     }
 
+    public int getRequestHonouredCount() {
+        return requestHonouredCount;
+    }
+
+    public void setRequestHonouredCount(int requestHonouredCount) {
+        this.requestHonouredCount = requestHonouredCount;
+    }
+
+    public Map<Integer, SharedFile> getPreviouslySharedFiles() {
+        return previouslySharedFiles;
+    }
+
+    public void setPreviouslySharedFiles(Map<Integer, SharedFile> previouslySharedFiles) {
+        this.previouslySharedFiles = previouslySharedFiles;
+    }
+
     public void simulatePeer() {
 
         Random random = new Random();
@@ -190,8 +208,26 @@ public class Peer implements Runnable {
             return;
         }
 
+        if (selectedPeerAction == PeerAction.SHARE) {
+            //System.out.println("Honouring request");
+            selectedFileId = chooseRequestedFileToShare(selectedFileId);
+        }
+
         tracker.sendMessage(this, selectedAction, selectedFileId);
 
+    }
+
+    private int chooseRequestedFileToShare(int selectedFileId) {
+        if (!tracker.getRequestedFiles().isEmpty()) {
+            for (int requestedFileId : tracker.getRequestedFiles().keySet()) {
+                if (previouslySharedFiles.containsKey(requestedFileId)) {
+                    selectedFileId = requestedFileId;
+                    previouslySharedFiles.remove(requestedFileId);
+                    break;
+                }
+            }
+        }
+        return selectedFileId;
     }
 
     public void downloadFile(TrackedFile fileToBeDownloaded) {
@@ -199,6 +235,7 @@ public class Peer implements Runnable {
         if (seeders.isEmpty()) {
             satisfaction -= DISSATISFACTION_PENALTY;
             ++disappointmentCount;
+            tracker.getRequestedFiles().put(fileToBeDownloaded.getId(), fileToBeDownloaded);
         } else {
             int totalUploadSpeedOfFile = fileToBeDownloaded.getTotalUploadSpeed();
             int fileDownloadSpeed = Math.min(downloadSpeed, totalUploadSpeedOfFile);
@@ -207,6 +244,7 @@ public class Peer implements Runnable {
             if (fileDownloadSpeed == 0) {                       //peers have suddenly stopped sharing the file
                 satisfaction -= DISSATISFACTION_PENALTY;
                 ++disappointmentCount;
+                tracker.getRequestedFiles().put(fileToBeDownloaded.getId(), fileToBeDownloaded);
                 return;
             }
 
@@ -224,14 +262,22 @@ public class Peer implements Runnable {
             ++downloadCount;
 
             for (Peer seeder : seeders.values()) {
+<<<<<<< HEAD
                 uploadFile(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
+=======
+                uploadWithHonouredRequestsAndRareFileBonus(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
+>>>>>>> be4fd7463fbefa6a952d27a987e2d3cbf0a2d46c
             }
 
         }
 
     }
 
+<<<<<<< HEAD
     private void uploadFile(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
+=======
+    private void upload(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
+>>>>>>> be4fd7463fbefa6a952d27a987e2d3cbf0a2d46c
         SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
         if (copyOfFileOfSeeder != null) {
             float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
@@ -248,6 +294,24 @@ public class Peer implements Runnable {
         shareRatio = amountUploaded / amountDownloaded;
     }
 
+    private void uploadWithHonouredRequestsAndRareFileBonus(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
+        SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
+        if (copyOfFileOfSeeder != null) {
+            float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
+            if (copyOfFileOfSeeder.isRequested()) {
+                amountUploadedBySeeder*=Main.RESEED_BONUS_FACTOR;
+            }
+            if (fileToBeDownloaded.isRare()) {
+                amountUploadedBySeeder*=Main.RARE_FILE_BONUS_FACTOR;
+            }
+            //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
+            seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
+            seeder.updateShareRatio();
+            seeder.setUploadCount(seeder.getUploadCount() + 1);
+            copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
+        }
+    }
+
     private float calculateProbableShareRatio(float downloadedFileSize) {
         float probableDownloadedFileSize = amountDownloaded + downloadedFileSize;
         return amountUploaded / probableDownloadedFileSize;
@@ -262,7 +326,8 @@ public class Peer implements Runnable {
 
     public void showFinalState() {
         System.out.println("Share Ratio: " + shareRatio + " , Satisfaction: " + satisfaction + "(" + satisfactionCount + "/" + disappointmentCount
-                + ") , AmountDownloaded: " + amountDownloaded + " , AmountUploaded: " + amountUploaded + " , DownloadCount: " + downloadCount + " , UploadCount: " + uploadCount);
+                + ") , AmountDownloaded: " + amountDownloaded + " , AmountUploaded: " + amountUploaded + " , DownloadCount: " + downloadCount
+                + " , UploadCount: " + uploadCount + " , Requests Honored: " + requestHonouredCount);
     }
 
     public void showSharedFiles() {

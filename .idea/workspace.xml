@@ -4,9 +4,9 @@
     <list default="true" id="06a88380-96cc-4102-8e14-c255a00d6bbb" name="Default" comment="" />
     <ignored path="BittorrentSim.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Peer.java" changelist="06a88380-96cc-4102-8e14-c255a00d6bbb" time="1366126081420" ignored="false" />
+    <file path="/Peer.java" changelist="06a88380-96cc-4102-8e14-c255a00d6bbb" time="1366655884530" ignored="false" />
     <file path="/Main.java" changelist="06a88380-96cc-4102-8e14-c255a00d6bbb" time="1366212545731" ignored="false" />
-    <file path="/Dummy.txt" changelist="06a88380-96cc-4102-8e14-c255a00d6bbb" time="1366645697126" ignored="false" />
+    <file path="/Dummy.txt" changelist="06a88380-96cc-4102-8e14-c255a00d6bbb" time="1366655753855" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -69,7 +69,7 @@
       <file leaf-file-name="Main.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="57" column="74" selection-start="1740" selection-end="1740" vertical-scroll-proportion="1.141994">
+            <state line="26" column="28" selection-start="964" selection-end="964" vertical-scroll-proportion="0.6906907">
               <folding />
             </state>
           </provider>
@@ -78,7 +78,7 @@
       <file leaf-file-name="TorrentSimUtils.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/TorrentSimUtils.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="44" column="83" selection-start="1892" selection-end="1947" vertical-scroll-proportion="0.0">
+            <state line="135" column="110" selection-start="5658" selection-end="5658" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -87,7 +87,7 @@
       <file leaf-file-name="Tracker.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Tracker.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="64" column="45" selection-start="2173" selection-end="2173" vertical-scroll-proportion="0.0">
+            <state line="108" column="21" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -96,7 +96,7 @@
       <file leaf-file-name="TrackedFile.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/TrackedFile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="0" selection-start="160" selection-end="160" vertical-scroll-proportion="0.0">
+            <state line="58" column="8" selection-start="1317" selection-end="1317" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -105,7 +105,7 @@
       <file leaf-file-name="Peer.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Peer.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="275" column="28" selection-start="8501" selection-end="8501" vertical-scroll-proportion="0.0">
+            <state line="296" column="55" selection-start="9620" selection-end="9620" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -114,7 +114,7 @@
       <file leaf-file-name="SharedFile.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/SharedFile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="26" selection-start="977" selection-end="977" vertical-scroll-proportion="0.0">
+            <state line="52" column="70" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -155,13 +155,13 @@
     <option name="changedFiles">
       <list>
         <option value="$PROJECT_DIR$/src/PeerAction.java" />
-        <option value="$PROJECT_DIR$/src/TrackedFile.java" />
         <option value="$PROJECT_DIR$/src/Utils.java" />
-        <option value="$PROJECT_DIR$/src/TorrentSimUtils.java" />
         <option value="$PROJECT_DIR$/src/SharedFile.java" />
+        <option value="$PROJECT_DIR$/src/TorrentSimUtils.java" />
+        <option value="$PROJECT_DIR$/src/TrackedFile.java" />
         <option value="$PROJECT_DIR$/src/Main.java" />
-        <option value="$PROJECT_DIR$/src/Peer.java" />
         <option value="$PROJECT_DIR$/src/Tracker.java" />
+        <option value="$PROJECT_DIR$/src/Peer.java" />
       </list>
     </option>
   </component>
@@ -233,7 +233,7 @@
     <property name="project.structure.proportion" value="0.0" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="MemberChooser.sorted" value="false" />
-    <property name="options.lastSelected" value="vcs.Git" />
+    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.Font" />
     <property name="recentsLimit" value="5" />
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="MemberChooser.copyJavadoc" value="false" />
@@ -421,8 +421,8 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16212338" sideWeight="0.49790794" order="1" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.50209206" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.15925394" sideWeight="0.5006974" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.49930266" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -490,6 +490,13 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/SharedFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="34" selection-start="756" selection-end="756" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/PeerAction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="10" column="0" selection-start="236" selection-end="236" vertical-scroll-proportion="0.0">
@@ -546,13 +553,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TrackedFile.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="0" selection-start="160" selection-end="160" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/PeerAction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="10" column="0" selection-start="236" selection-end="236" vertical-scroll-proportion="0.0">
@@ -560,44 +560,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TorrentSimUtils.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="83" selection-start="1892" selection-end="1947" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://C:/Program Files/Java/jdk1.7.0_07/src.zip!/java/lang/Float.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="874" column="22" selection-start="33908" selection-end="33908" vertical-scroll-proportion="0.33285093">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/SharedFile.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="26" selection-start="977" selection-end="977" vertical-scroll-proportion="0.0">
+        <state line="52" column="70" selection-start="1213" selection-end="1213" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TrackedFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="58" column="8" selection-start="1317" selection-end="1317" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Peer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="275" column="28" selection-start="8501" selection-end="8501" vertical-scroll-proportion="0.0">
+        <state line="296" column="55" selection-start="9620" selection-end="9620" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TorrentSimUtils.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="135" column="110" selection-start="5658" selection-end="5658" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Tracker.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="45" selection-start="2173" selection-end="2173" vertical-scroll-proportion="0.0">
+        <state line="108" column="21" selection-start="3901" selection-end="3901" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="74" selection-start="1740" selection-end="1740" vertical-scroll-proportion="1.141994">
+        <state line="26" column="28" selection-start="964" selection-end="964" vertical-scroll-proportion="0.6906907">
           <folding />
         </state>
       </provider>

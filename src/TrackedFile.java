@@ -49,9 +49,15 @@ public class TrackedFile {
         int totalUploadSpeed = 0;
 
         for (Peer seeder : seeders.values()) {
-            totalUploadSpeed+=seeder.getUploadSpeed();
+            totalUploadSpeed += seeder.getUploadSpeed();
         }
 
         return totalUploadSpeed;
+    }
+
+    public boolean isRare() {
+        int rarenessThreshold = Main.MAX_NO_OF_PEERS / Main.PEER_RARENESS_FACTOR;
+        int numberOfPeers = seeders.size();
+        return numberOfPeers < rarenessThreshold;
     }
 }
