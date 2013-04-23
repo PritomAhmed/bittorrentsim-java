@@ -262,22 +262,17 @@ public class Peer implements Runnable {
             ++downloadCount;
 
             for (Peer seeder : seeders.values()) {
-<<<<<<< HEAD
-                uploadFile(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
-=======
+                //uploadFile(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
                 uploadWithHonouredRequestsAndRareFileBonus(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
->>>>>>> be4fd7463fbefa6a952d27a987e2d3cbf0a2d46c
+
             }
 
         }
 
     }
 
-<<<<<<< HEAD
+
     private void uploadFile(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
-=======
-    private void upload(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
->>>>>>> be4fd7463fbefa6a952d27a987e2d3cbf0a2d46c
         SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
         if (copyOfFileOfSeeder != null) {
             float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;

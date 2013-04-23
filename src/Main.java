@@ -19,7 +19,7 @@ public class Main {
     public static final int FILE_AVAILABILITY_MODULO = 100;
     public static final int MAX_NO_OF_ACTIONS = 3;
     public static final int MAX_NO_OF_ROUNDS_PER_PEER = 2000;
-    public static final float MIN_SHARE_RATIO = 0.5f;
+    public static final float MIN_SHARE_RATIO = 0.6f;
     public static final int FILE_SHARE_PROBABILITY = 50;
     public static final int RESEED_BONUS_FACTOR = 5;
     public static final int PEER_RARENESS_FACTOR = 20;
