@@ -224,7 +224,7 @@ public class Peer implements Runnable {
             ++downloadCount;
 
             for (Peer seeder : seeders.values()) {
-                uploadFile(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
+                uploadWithRareTorrentBonus(fileToBeDownloaded, totalUploadSpeedOfFile, downloadedFileSize, seeder);
             }
 
         }
@@ -236,6 +236,23 @@ public class Peer implements Runnable {
         if (copyOfFileOfSeeder != null) {
             float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
             //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
+            seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
+            seeder.updateShareRatio();
+            seeder.setUploadCount(seeder.getUploadCount() + 1);
+            copyOfFileOfSeeder.setUploadedSize(copyOfFileOfSeeder.getUploadedSize() + amountUploadedBySeeder);
+        }
+    }
+
+    private void uploadWithRareTorrentBonus(TrackedFile fileToBeDownloaded, int totalUploadSpeedOfFile, int downloadedFileSize, Peer seeder) {
+        SharedFile copyOfFileOfSeeder = seeder.getSharedFiles().get(fileToBeDownloaded.getId());
+        int numberOfSeeders = fileToBeDownloaded.getSeeders().size();
+
+        if (copyOfFileOfSeeder != null) {
+            float amountUploadedBySeeder = (uploadSpeed * downloadedFileSize) / totalUploadSpeedOfFile;
+            //System.out.println("Upload Speed: "+ uploadSpeed + " , TotalUploadSpeed: " + totalUploadSpeedOfFile + " , FileSize: " + downloadedFileSize +" , Amount uploaded by seeder: " + amountUploadedBySeeder);
+            if (fileToBeDownloaded.isRare()) {
+                 amountUploadedBySeeder*=Main.RARE_FILE_BONUS_FACTOR;
+            }
             seeder.setAmountUploaded(seeder.getAmountUploaded() + amountUploadedBySeeder);
             seeder.updateShareRatio();
             seeder.setUploadCount(seeder.getUploadCount() + 1);

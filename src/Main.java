@@ -21,6 +21,9 @@ public class Main {
     public static final int MAX_NO_OF_ROUNDS_PER_PEER = 2000;
     public static final float MIN_SHARE_RATIO = 0.5f;
     public static final int FILE_SHARE_PROBABILITY = 50;
+    public static final int PEER_RARENESS_FACTOR = 20;
+    public static final int RARE_FILE_DELETE_PROBABILITY = 50;
+    public static final int RARE_FILE_BONUS_FACTOR = 3;
 
     public static final Map<Integer, Integer> bandwidthMap;
     public static final Map<Integer, Integer> storageCapMap;

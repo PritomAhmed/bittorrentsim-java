@@ -54,4 +54,10 @@ public class TrackedFile {
 
         return totalUploadSpeed;
     }
+
+    public boolean isRare() {
+        int rarenessThreshold = Main.MAX_NO_OF_PEERS/Main.PEER_RARENESS_FACTOR;
+        int numberOfPeers = seeders.size();
+        return numberOfPeers < rarenessThreshold;
+    }
 }

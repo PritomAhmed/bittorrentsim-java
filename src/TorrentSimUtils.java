@@ -132,7 +132,7 @@ public class TorrentSimUtils {
 
     public static void writeResultToFile(float totalSatisfaction) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("result.csv", true));
+            BufferedWriter writer = new BufferedWriter(new FileWriter("resultWithRareTorrentBonus.csv", true));
             writer.newLine();
             StringBuilder resultString = new StringBuilder();
             resultString.append(new Date().toString() + ",");
