@@ -140,6 +140,7 @@ public class TorrentSimUtils {
             resultString.append(Main.MAX_NO_OF_PEERS + ",");
             resultString.append(Main.MIN_SHARE_RATIO + ",");
             resultString.append(Main.MAX_NO_OF_ROUNDS_PER_PEER + ",");
+            resultString.append(Main.RARE_FILE_BONUS_FACTOR + ",");
             resultString.append(totalSatisfaction);
 
             writer.append(resultString);

@@ -39,13 +39,8 @@ public class SharedFile implements Comparable {
     @Override
     public int compareTo(Object o) {
         SharedFile comparedFile = (SharedFile) o;
-<<<<<<< HEAD
-        float ownUploadRatio = uploadedSize/(float)size;
-        float comparedFileUploadRatio = comparedFile.getUploadedSize()/(float)comparedFile.getSize();
-=======
         float ownUploadRatio = uploadedSize / (float) size;
         float comparedFileUploadRatio = comparedFile.getUploadedSize() / (float) comparedFile.getSize();
->>>>>>> fb66c1019a5c73f9ac0078742fd217b53966637c
         return Float.compare(ownUploadRatio, comparedFileUploadRatio);
     }
 
